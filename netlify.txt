@@ -1,0 +1,5 @@
+npm install
+cd Qwiz-frontend/
+npm run build
+npm install netlify-cli
+netlify deploy
