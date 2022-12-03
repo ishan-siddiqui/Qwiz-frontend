@@ -1,14 +1,13 @@
-FROM node:14-alpine AS development
-ENV NODE_ENV development
-# Add a work directory
+# build stage
+FROM node:lts-alpine as build-stage
 WORKDIR /app
-# Cache and Install dependencies
-COPY package.json .
-COPY yarn.lock .
-RUN yarn install
-# Copy app files
+COPY package*.json ./
+RUN npm install
 COPY . .
-# Expose port
-EXPOSE 3000
-# Start the app
-CMD [ "yarn", "start" ]
+RUN npm run build     
+
+# production stage
+FROM nginx:stable-alpine as production-stage
+COPY --from=build-stage /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
